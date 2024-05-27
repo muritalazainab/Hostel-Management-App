@@ -17,54 +17,56 @@ function App() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000)
-
-  }, [])
-
-
+    }, 3000);
+  }, []);
 
   return (
     <>
-      {loading ? <Loader /> : (
-         <div>
-         <Routes>
-           <Route path="/" element={<AdminReg />} />
- 
-           <Route path="/login" element={<Login />} />
-           
-           <Route path="/student-reg" element={
-           <Layout>
- 
-             <StudentReg />
-           </Layout>
-             } />
- 
-           <Route
-             path="/homedash"
-             element={
-               <Layout>
-                 <HomeDash /> 
-               </Layout>
-             }
-           />
- 
-           <Route path="/room" element={<Rooms />}/>
- 
-           <Route path="/adminsPrev" element={<AdminPreview />}/>
-           
-           <Route path="/attendance" element={
-             
-             <Layout>
-               <Attendance />
-             </Layout>
-             
-           }/>
- 
-           <Route path="/studentdash" element={<StudentDashboard />}/>
-         </Routes>
-       </div>
- 
-      )}    </>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          <Routes>
+            <Route path="/" element={<AdminReg />} />
+
+            <Route path="/login" element={<Login />} />
+
+            <Route
+              path="/student-reg"
+              element={
+                <Layout>
+                  <StudentReg />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/homedash"
+              element={
+                <Layout>
+                  <HomeDash />
+                </Layout>
+              }
+            />
+
+            <Route path="/room" element={<Rooms />} />
+
+            <Route path="/adminsPrev" element={<AdminPreview />} />
+
+            <Route
+              path="/attendance"
+              element={
+                <Layout>
+                  <Attendance />
+                </Layout>
+              }
+            />
+
+            <Route path="/studentdash" element={<StudentDashboard />} />
+          </Routes>
+        </div>
+      )}{" "}
+    </>
   );
 }
 
