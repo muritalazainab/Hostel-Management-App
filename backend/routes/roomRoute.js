@@ -1,30 +1,14 @@
-const mongoose = require("mongoose");
+const express = require("express");
 
-const roomSchema = new mongoose.Schema({
-  roomNumber: {
-    type: Number,
-    require: true,
-    unique: true
-  },
-  capacity: {
-    type: Number,
-    require: true
-  },
+const { createNewRoom, getAllRooms, updateRoom, deleteRoom, getRoom } = require("../controllers/roomController");
+const router = express.Router();
 
-  occupancy: {
-    type: Number,
-    ref: "Student"
-},
-location: {
-    type: String,
-    require: true
-  },
-  status: {
-    type: String,
-    default: "Unavailable"
-  },
-});
+router.post("/create", createNewRoom)
+router.get("/", getAllRooms)
+router.put("/:roomId", updateRoom)
+router.delete("/:roomId", deleteRoom)
+router.get("/:roomId", getRoom)
 
 
-const Room = mongoose.model("Room", roomSchema);
-module.exports = Room;
+
+module.exports = router;
