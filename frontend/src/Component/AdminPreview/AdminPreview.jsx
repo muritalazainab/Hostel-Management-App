@@ -1,54 +1,75 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./AdminPreview.css";
 import { CiSearch } from "react-icons/ci";
 import UserTable from "./UserTable";
+import {confirmAlert} from 'react-confirm-alert';
+import "react-confirm-alert/src/react-confirm-alert.css"
+import useAuthRedirect from "../../../context/useAuth"
+import axios from "axios";
 
-const userData = [
-  { name: "Nafisat", email: "john@example.com", role: "Admin", id: 1 },
-  { name: "Zainab ", email: "Zainab@example.com", role: "User", id: 2 },
-  { name: "Basirat", email: "Basirat@example.com", role: "Member", id: 3 },
-  { name: "Azeez", email: "Azeez@example.com", role: "Admin", id: 4 },
-  { name: "Soliu", email: "Soliu@example.com", role: "Member", id: 5 },
-];
+
+const userData = [];
 
 const AdminPreview = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState(userData);
-  const [filteredData, setFilteredData] = useState(userData);
+useAuthRedirect();
+const [search, setSearch] = useState("");
+const [adminData, setAdminData] = useState([])
+const [message, setMessage] = useState("")
+const [isLoading, setIsLoading] = useState(false)
 
-  const handleSearchChange = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    const filtered = users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) ||
-        user.role.toLowerCase().includes(term)
-    );
-    setFilteredData(filtered);
+
+useEffect(() => {
+  const fetchAdmin = async () => {
+    try {
+      setIsLoading(true)
+      const response = await axios.get("http://localhost:3500/admin/");
+      setAdminData(response.data);
+     
+    } catch (error) {
+      setIsLoading(false)
+      setMessage("Error fetching data")
+    }finally{
+      setIsLoading(false)
+    }
   };
 
-  const handleDelete = (userId) => {
-    const updatedUsers = users.filter((user) => user.id !== userId);
-    setUsers(updatedUsers);
-    const updatedFilteredData = filteredData.filter(
-      (user) => user.id !== userId
-    );
-    setFilteredData(updatedFilteredData);
+fetchAdmin()
+}, []);
+
+
+  const handleDelete =async (id) => {
+    console.log("Deleting user with id", id);
+    try {
+      await axios.delete(`http://localhost:3500/admin/${id}`);
+      setAdminData((prevData) => prevData.filter((admin) => admin._id !== id));
+      setMessage("Admin deleted Successfully")
+    } catch (error) {
+     setMessage("Failed to delete admin")
+     console.error("Error deleting admin", error) 
+    }
+    
   };
 
-  const handleUpdateRole = (userId, newRole) => {
-    const updatedUsers = users.map((user) =>
-      user.id === userId ? { ...user, role: newRole } : user
-    );
-    setUsers(updatedUsers);
+  const handleUpdateRole = async (id, newRole) => {
+    try {
+      const response = await axios.patch(`http://localhost:3500/admin/${id}`, {
+        role: newRole,
+      });
+      setAdminData((prevData) => prevData.map((admin) =>admin._id === id ? {...admin, role: response.data.role}:admin ))
+      setMessage("Admin updated Successfully")
+    } catch (error) {
+      setMessage("Failed to update admin",)
+      console.error("failed to update admin", error)
 
-    // Update filtered data as well
-    const updatedFilteredData = filteredData.map((user) =>
-      user.id === userId ? { ...user, role: newRole } : user
-    );
-    setFilteredData(updatedFilteredData);
+
+      
+    }
+ 
   };
+  const filteredData = adminData.filter((admin) => admin.fullname.toLowerCase().includes(search.toLowerCase())
+|| admin.email.toLowerCase().includes(search.toLowerCase()));
+  
+
 
   return (
     <div className="__prevCon">
@@ -60,24 +81,27 @@ const AdminPreview = () => {
           type="text"
           className="__prevSearch"
           placeholder="Search by name or email or role"
-          value={searchTerm}
-          onChange={handleSearchChange}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       <div className="__prevList">
+      {isLoading ?( <p>Loading...</p>
+      ): adminData.length > 0 ? (
+        
         <UserTable
           data={filteredData}
           onDelete={handleDelete}
           onUpdateRole={handleUpdateRole}
         />
+      ):(<p>No admin found</p>)}
       </div>
 
-      <div className="__inviteBtnCon">
-        <button className="__inviteBtn">
-            Invite Admin
-        </button>
-      </div>
+     
+
+        {message && <p>{message}</p>}
+    
     </div>
   );
 };

@@ -5,26 +5,16 @@ import StudentReg from "./Component/Register/StudentReg";
 import HomeDash from "./Component/Dashboard/HomeDash";
 import Layout from "./Component/Layout/Layout";
 import StudentDashboard from "./Component/Dashboard/StudentDashboard";
-import Rooms from "./Component/Dashboard/Rooms";
 import AdminPreview from "./Component/AdminPreview/AdminPreview";
 import Attendance from "./Component/Attendance/Attendance";
-import { useEffect, useState } from "react";
-import Loader from "./Component/Loader/Loader";
+import Room from "./Component/Dashboard/Room";
 
 function App() {
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
+      
         <div>
           <Routes>
             <Route path="/" element={<AdminReg />} />
@@ -34,9 +24,7 @@ function App() {
             <Route
               path="/student-reg"
               element={
-                <Layout>
                   <StudentReg />
-                </Layout>
               }
             />
 
@@ -49,9 +37,9 @@ function App() {
               }
             />
 
-            <Route path="/room" element={<Rooms />} />
+            <Route path="/room" element={<Room />} />
 
-            <Route path="/adminsPrev" element={<AdminPreview />} />
+            <Route path="/adminPrev" element={<AdminPreview />} />
 
             <Route
               path="/attendance"
@@ -65,7 +53,7 @@ function App() {
             <Route path="/studentdash" element={<StudentDashboard />} />
           </Routes>
         </div>
-      )}{" "}
+ 
     </>
   );
 }

@@ -1,26 +1,43 @@
-import React from "react";
+import axios  from 'axios';
 import "./Header.css";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import HeaderSideNav from "./HeaderSideNav";
+import { UserContext } from "../../../context/userContent";
+import { toast } from "react-toastify";
 
 
 const items = [
-  { title: "Dashboard", url: "/homedash" },
+  
   { title: "Students", url: "/studentdash" },
   { title: "Rooms", url: "/room" },
 ];
 
 const Header = () => {
+  const navigate = useNavigate()
+  const {setUser} = useContext(UserContext);  
   const [navToggle, setNavToggle] = useState(false);
+  const logOutUser = async () => {
+    try {
+       await axios.post("http://localhost:3500/admin/logout", null,{
+        withCredentials: true,
+      })
+      setUser(null);
+      toast.success("Logged out successfully")
+      navigate("/login");
+    } catch (error) {
+      console.error("Failed to log out:", error); 
+    }
+  
+  }
 
   return (
     <>
       {navToggle && (
         <div className="mobile-sidebar">
           <HeaderSideNav items={items} setNavToggle={setNavToggle} />
-        </div>
+</div>
       )}
       <header>
         <nav className="navigation --flex-between">
@@ -64,7 +81,7 @@ const Header = () => {
           </div>
 
           <div className="btn__wrapper --flex-center">
-            <button className="btn-primary">New</button>
+            <button className=".btn-danger" onClick={logOutUser} >Logout</button>
             <button className="notification">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +100,9 @@ const Header = () => {
             </button>
 
             <div>
+              <Link to="/adminPrev">
               <img src="/src/assets/nav-image.png" alt="nav-image" />
+              </Link>
             </div>
           </div>
         </nav>

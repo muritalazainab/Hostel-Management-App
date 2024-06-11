@@ -174,19 +174,24 @@ const getAdmins = asyncHandler(async (req, res) => {
 });
 
 const updateAdmin = asyncHandler(async (req, res) => {
-  const { adminId } = req.params;
-
-  const admin = await Admin.findById(adminId).select("-password");
-
-  if (admin) {
-    if (req.body?.fullname) admin.fullname = req.body.fullname;
-    if (req.body?.email) admin.email = req.body.email;
-    if (req.body?.role) admin.role = req.body.role;
-
-    const result = await admin.save();
-
-    res.json(result);
+ const adminId = req.params.adminId
+ const {role} = req.body
+ try {
+  const admin = await Admin.findById(adminId)
+  if(!admin){
+    res.status(404)
+    throw new Error("Admin not found")
   }
+  admin.role = role
+  await admin.save()
+  res.status(200).json(admin)
+ } catch (error) {
+  console.error("error updating admin", error)
+  res.status(500).json("Server error")
+ }
+
+
+ 
 });
 
 const logoutAdmin = asyncHandler(async (req, res) => {
@@ -202,17 +207,7 @@ const logoutAdmin = asyncHandler(async (req, res) => {
 });
 
 
-// const logoutAdmin = asyncHandler(async (req, res) => {
-//   res.cookie("token", "none", {
-//     path: "/",
-//     httpOnly: true,
-//     expires: new Date(Date.now() + 1000 * 86400), // 1day
-//     sameSite: "none",
-//     secure: true,
-//   });
 
-//   return res.status(200).json({ message: "Logged out successfully" });
-// });
 
 module.exports = {
   register,

@@ -67,6 +67,7 @@ const updateRoom = asyncHandler(async (req, res) => {
     if (req.body.roomNumber) room.roomNumber = req.body.roomNumber;
     if (req.body.roomCapacity) room.roomCapacity = req.body.roomCapacity;
     if (req.body.roomLocation) room.roomLocation = req.body.roomLocation;
+    if (req.body.roomStatus) room.roomStatus = req.body.roomStatus;
 
     const result = await room.save();
 

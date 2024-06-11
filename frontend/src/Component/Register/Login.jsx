@@ -1,14 +1,60 @@
-import React from 'react'
+import {useCallback, useContext, useState} from 'react'
 import './Register.css'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import PasswordInput from '../passwordInput/PasswordInput';
+import { UserContext} from '../../../context/userContent';
+import axios from 'axios';
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [formValidMessage,setFormValidMessage] = useState("")
+  const [isSubmitting,setIsSubmitting] = useState(false)
+  const navigate = useNavigate();
+  const {setUser} = useContext(UserContext);
+  const handleInputChange = useCallback((e) => {
+    setFormValidMessage("")
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  }, [])
+  const loginUser = useCallback((e) => {
+    e.preventDefault()
+    const {email,password} = formData
+    if(!email || !password){
+      setFormValidMessage("Please fill all the fields")
+      return
+    }
+    setIsSubmitting(true);
+    axios.post("http://localhost:3500/admin/login",formData)
+    .then((response) => {
+      setUser(response.data);
+      setIsSubmitting(false);
+      toast.success("Login successful");
+      navigate("/homedash", {state: {user:response.data}})
+    })
+    .catch((error) => {
+      setIsSubmitting(false)
+      const message = error.response?.status === 401 ? "Invalid credentials" : "Something went wrong"
+      setFormValidMessage(message)
+    
+    })
+  },[formData, navigate, setUser])
+  
+
+ 
+
   return (
     <div className="container form__ --100vh">
       <div className="form-container">
-        <p className="title"> Login as an Admin</p>
+        <p className="title" > Login as an Admin</p>
 
-        <form className="form">
+        <form className="form" onSubmit={loginUser}>
 
           <div className="--dir-column">
             <label htmlFor="email">Email:</label>
@@ -18,23 +64,27 @@ const Login = () => {
             name="email"
             placeholder="example@yahoo.com"
             required
+            value={formData.email}
+            onChange={handleInputChange}
             />
           </div>
 
           <div className="--dir-column">
             <label htmlFor="password">Password:</label>
-            <input 
-            type="password"
-            className="input"
-            name="password"
-            placeholder="Enter your password"
-            required
-            />
+            <PasswordInput
+                  placeholder="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
           </div>
 
 
-          <button className="--btn">Login </button>
+          <button className="--btn" disabled={isSubmitting}>{isSubmitting ? "Signing In...":"Sign In"} </button>
         </form>
+        {formValidMessage && (
+        <p className='error-message'>{formValidMessage}</p>)}
+            
         <p>
           Don&apos;t have an account yet? <Link to='/'>Register</Link> {" "}
         </p>
