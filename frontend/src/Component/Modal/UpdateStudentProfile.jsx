@@ -17,7 +17,7 @@ const UpdateStudentProfile = ({ student, onClose }) => {
     e.preventDefault();
     try {
       await axios.patch(
-        `http://localhost:3500/student/${student._id}`,
+        `https://hostel-management-app-xi.vercel.app//student/${student._id}`,
         formData
       );
     } catch (error) {

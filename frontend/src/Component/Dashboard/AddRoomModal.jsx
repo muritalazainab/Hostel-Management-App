@@ -24,7 +24,7 @@ const AddRoomModal = ({ onAddRoom, onClose }) => {
   setError("")
   try{
 
-    const response = await axios.post("http://localhost:3500/room/create", newRoom);
+    const response = await axios.post("https://hostel-management-app-xi.vercel.app/room/create", newRoom);
     console.log(error)
     onAddRoom(response.data)
     onClose()

@@ -40,7 +40,7 @@ fetchAdmin()
   const handleDelete =async (id) => {
     console.log("Deleting user with id", id);
     try {
-      await axios.delete(`http://localhost:3500/admin/${id}`);
+      await axios.delete(`https://hostel-management-app-xi.vercel.app/admin/${id}`);
       setAdminData((prevData) => prevData.filter((admin) => admin._id !== id));
       setMessage("Admin deleted Successfully")
     } catch (error) {
@@ -52,7 +52,7 @@ fetchAdmin()
 
   const handleUpdateRole = async (id, newRole) => {
     try {
-      const response = await axios.patch(`http://localhost:3500/admin/${id}`, {
+      const response = await axios.patch(`https://hostel-management-app-xi.vercel.app/${id}`, {
         role: newRole,
       });
       setAdminData((prevData) => prevData.map((admin) =>admin._id === id ? {...admin, role: response.data.role}:admin ))
